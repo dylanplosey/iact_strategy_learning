@@ -13,4 +13,5 @@ The files are named as follows:
 The files can be used to obtain the Policy_Loss (policy), Reward_Error (theta), and Strategy_Error (phi) for each individual user and each different condition.
 
 - .pkl : these files are a list of Results objects (see "saving.py"), which include the gridworld, demonstration, theta_star, phi_star, and what was learned by each type of robot
-- .csv : these files include the Policy_Loss (policy), Reward_Error (theta), and the learned value of phi_star (phi). Each row is a different simulated user, and the columns are as follows: [phi = -1, phi = +1, phi = 0 (Prior), Joint, phi^*]- .m : these files are simply the .csv files, but prepared for use in MATLAB. When imported to MATLAB, you will get matrices for the Policy_Loss (policy), Reward_Error (theta), and the learned value of phi_star (phi)
+- .csv : these files include the Policy_Loss (policy), Reward_Error (theta), and the learned value of phi_star (phi). Each row is a different simulated user, and the columns are as follows: [phi = -1, phi = +1, phi = 0 (Prior), Joint, phi^*]
+- .m : these files are simply the .csv files, but prepared for use in MATLAB. When imported to MATLAB, you will get matrices for the Policy_Loss (policy), Reward_Error (theta), and the learned value of phi_star (phi)
