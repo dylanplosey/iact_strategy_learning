@@ -42,11 +42,11 @@ for user_number in range(n_users):
 
     #sample theta and phi with each type of robot, and obtain the mean value for each
     #note that we are using a modified version of Policy_Walk here
-    theta_mean_n, phi_mean_n = ut.sample_reward(mdp, D, T, eta_theta, 0.0, alpha, theta0, -1.0)
-    theta_mean_p, phi_mean_p = ut.sample_reward(mdp, D, T, eta_theta, 0.0, alpha, theta0, 1.0)
-    theta_mean_0, phi_mean_0 = ut.sample_reward(mdp, D, T, eta_theta, 0.0, alpha, theta0, 0.0)
-    theta_mean_L, phi_mean_L = ut.sample_reward(mdp, D, T, eta_theta, eta_phi, alpha, theta0, phi0)
-    theta_mean_S, phi_mean_S = ut.sample_reward(mdp, D, T, eta_theta, 0.0, alpha, theta0, phi_star)
+    theta_mean_n, phi_mean_n = ut.sample_reward(mdp, D, T, eta_theta, 0.0, alpha, theta0, -1.0)		#learner with phi = -1
+    theta_mean_p, phi_mean_p = ut.sample_reward(mdp, D, T, eta_theta, 0.0, alpha, theta0, 1.0)		#learner with phi = +1
+    theta_mean_0, phi_mean_0 = ut.sample_reward(mdp, D, T, eta_theta, 0.0, alpha, theta0, 0.0)		#learner with phi = 0 (Prior)
+    theta_mean_L, phi_mean_L = ut.sample_reward(mdp, D, T, eta_theta, eta_phi, alpha, theta0, phi0)	#Joint learner
+    theta_mean_S, phi_mean_S = ut.sample_reward(mdp, D, T, eta_theta, 0.0, alpha, theta0, phi_star)	#ideal learner
 
     #save the results for the current user to the Pickle file
     data = [phi_mean_n, theta_mean_n, phi_mean_p, theta_mean_p, phi_mean_0, theta_mean_0,
