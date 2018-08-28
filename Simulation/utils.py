@@ -13,7 +13,7 @@ import time
 import numpy as np
 
 
-EPSILON = np.nextafter(0,1)
+EPSILON = np.nextafter(0, 1)
 
 
 def sample_reward(mdp, D, T, eta_theta, eta_phi, alpha, theta, phi):
@@ -26,7 +26,7 @@ def sample_reward(mdp, D, T, eta_theta, eta_phi, alpha, theta, phi):
     P = likelihood(mdp, theta, phi, V, D, alpha)
     watchdog, count = time.time(), 0
     while time.time() - watchdog < T:
-        #to mitigate the effects of local minima, sample randomly sometimes!
+        # to mitigate the effects of local minima, sample randomly sometimes!
         if random.random() < 0.95:
             theta1, phi1 = perturb_theta(theta, eta_theta), perturb_phi(phi, eta_phi)
         else:
@@ -42,12 +42,12 @@ def sample_reward(mdp, D, T, eta_theta, eta_phi, alpha, theta, phi):
             count += 1
     print("I sampled " + str(count) + " times!")
     theta_mean = np.mean(np.array(theta_chain), axis=0).tolist()
-    phi_mean = sum(phi_chain)/len(phi_chain)
+    phi_mean = sum(phi_chain) / len(phi_chain)
     return theta_mean, phi_mean
 
 
 def action_likelihood(mdp, theta, phi, V, state, action, alpha):
-    """The (modeled) human's policy, i.e., likelihood of taking a specific action 
+    """The (modeled) human's policy, i.e., likelihood of taking a specific action
     given the state, theta, phi and alpha.
     Note that this returns a probability which is NOT normalized"""
     s1 = mdp.T(state, action)
@@ -73,7 +73,7 @@ def simulated_human(mdp, theta, phi, alpha, noise):
     A given human action is completely random with probability noise"""
     threshold = 1.0 - noise
     _, V = policy_iteraion(mdp, theta)
-    D = dict([(s,0) for s in mdp.states])
+    D = dict([(s, 0) for s in mdp.states])
     for s in mdp.states:
         if random.random() < threshold:
             q = [action_likelihood(mdp, theta, phi, V, s, a, alpha) for a in s.actions]
@@ -87,19 +87,19 @@ def simulated_human(mdp, theta, phi, alpha, noise):
 
 def sample_phi():
     """Generate a random value of phi"""
-    return random.uniform(-1,1)
+    return random.uniform(-1, 1)
 
 
-def perturb_phi(phi,eta):
+def perturb_phi(phi, eta):
     """Randomly perturb phi by step size eta"""
-    lb = max(-eta/2.0, -1 - phi)
-    ub = min(eta/2.0, 1 - phi)
+    lb = max(-eta / 2.0, -1 - phi)
+    ub = min(eta / 2.0, 1 - phi)
     return phi + random.uniform(lb, ub)
 
 
 def sample_theta(nFeats):
     """Generate a random value of theta"""
-    return [random.uniform(-1.0/nFeats, 1.0/nFeats) for _ in range(nFeats)]
+    return [random.uniform(-1.0 / nFeats, 1.0 / nFeats) for _ in range(nFeats)]
 
 
 def perturb_theta(theta, eta):
@@ -107,25 +107,25 @@ def perturb_theta(theta, eta):
     nFeats = len(theta)
     theta1 = [theta[i] for i in range(nFeats)]
     for i in range(nFeats):
-        lb = max(-eta/2.0, -1.0/nFeats - theta[i])
-        ub = min(eta/2.0, 1.0/nFeats - theta[i])
+        lb = max(-eta / 2.0, -1.0 / nFeats - theta[i])
+        ub = min(eta / 2.0, 1.0 / nFeats - theta[i])
         theta1[i] += random.uniform(lb, ub)
     return theta1
 
 
-def policy_iteraion(mdp, theta, pi0 = None):
+def policy_iteraion(mdp, theta, pi0=None):
     """Policy iteration algorithm, where the policy is initialized with pi0"""
     if pi0:
-        pi = dict([(s,pi0[s]) for s in mdp.states])
+        pi = dict([(s, pi0[s]) for s in mdp.states])
     else:
-        pi = dict([(s,random.choice(s.actions)) for s in mdp.states])
+        pi = dict([(s, random.choice(s.actions)) for s in mdp.states])
     while True:
         V = policy_value(mdp, theta, pi)
         unchanged = True
         for s in mdp.states:
-            max_reward = V[mdp.T(s,pi[s])]
+            max_reward = V[mdp.T(s, pi[s])]
             for a in s.actions:
-                curr_reward = V[mdp.T(s,a)]
+                curr_reward = V[mdp.T(s, a)]
                 if curr_reward > max_reward + 1e-5:
                     max_reward = curr_reward
                     pi[s] = a
