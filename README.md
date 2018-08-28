@@ -2,7 +2,7 @@
 
 The code used to perform the Examples and Simulation in our Paper "Learning the Human's Interaction Strategy" (in process).
 
-# Learning Example
+## Learning Example
 
 To perform the Example from Section IV-C, use the MATLAB code "robot_learning.m"
 This code also uses "sampleFromVector.m"
