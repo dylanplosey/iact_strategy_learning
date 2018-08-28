@@ -1,18 +1,15 @@
 # Iact_Strategy_Learning
 
-The code used to perform the Examples and Simulation in our Paper "Learning the Human's Interaction Strategy" (in process).
+This repository includes the code used to perform the examples and simulations in our paper: "Learning the Human's Interaction Strategy" (in process). We also have included the results from our simulation, which were used to generate the results in our paper.
 
 ## Learning Example
 
-To perform the Example from Section IV-C, use the MATLAB code "robot_learning.m"
-This code also uses "sampleFromVector.m"
+This folder contains the code used to generate the example in Section IV-C, where the robot is learning to sort screws from a human expert.
 
 ## Teaching Example
 
-To perform the Example from Section V-D, use the MATLAB code "robot_teaching.m"
-This code also uses "sampleFromVector.m" and "normalizer.m"
+This folder contains the code used to generate the example in Section V-D, where the robot is teaching the human which goal it is attempting to reach.
 
-## Learning Simulations
+## Simulations
 
-To perform the Simulations reported in Section VI (Learning Simulations), use the python code "simulation_main.py"
-This code also uses "utils.py" and "saving.py"
+This folder contains the code used to perform the "Learning Simulations" in Section VI. The human provides a policy demonstration, and the robot is attempting to learn the human's reward parameters.
