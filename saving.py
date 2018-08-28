@@ -1,7 +1,6 @@
 '''
-Created on Aug 20, 2018
+Define the functions for saving and processing the simulation results
 
-@author: Lenovo
 '''
 
 import pickle
@@ -11,6 +10,7 @@ import numpy as np
 
 
 def phi_loss(results):
+    """Return the learned value of phi for each robot type"""
     loss = []
     for res in results:
         phi = [res.phi_n, res.phi_p, res.phi_0, res.phi_L, res.phi_S]
@@ -19,6 +19,7 @@ def phi_loss(results):
 
 
 def theta_loss(results):
+    """Return the Reward_Error for each robot type"""
     loss = np.zeros((len(results),5))
     error = [0] * 5
     for res in results:
@@ -30,6 +31,7 @@ def theta_loss(results):
 
 
 def policy_loss(results):
+    """Return the Policy_Loss for each robot type"""
     loss = np.zeros((len(results),5))
     error = [0] * 5
     for res in results:
@@ -43,6 +45,7 @@ def policy_loss(results):
         
     
 def load_results(path_pickle):
+    """Return a list of the objects in a pickle file"""
     results = []
     with open(path_pickle, 'rb') as pickle_file:
         while True:
@@ -55,6 +58,7 @@ def load_results(path_pickle):
 
 
 def csv_writer(data, path, append = False):
+    """Write to a csv file"""
     append_write = "w"
     if append:
         append_write = "a"
@@ -65,6 +69,7 @@ def csv_writer(data, path, append = False):
 
 
 def save_object(obj, path, append = False):
+    """Write to a pickle file"""
     append_write = "wb"
     if append:
         append_write = "ab"
@@ -75,6 +80,9 @@ def save_object(obj, path, append = False):
 class Results:
     
     def __init__(self, ID, mdp, theta_star, phi_star, D, alpha, data):
+        """Store the results of a simulated user, including the gridworld, their
+        demonstration, the true values of theta_star and phi_star, and what the
+        different types of robot's learned"""
         self.ID = ID
         self.mdp = mdp
         self.theta_star = theta_star
