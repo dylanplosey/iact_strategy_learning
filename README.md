@@ -1,6 +1,6 @@
 # Iact_Strategy_Learning
 
-This repository includes the code used to perform the examples and simulations in our paper: "Learning the Human's Interaction Strategy" (in process). We also have included the results from our simulation, which were used to generate the results in our paper.
+This repository includes the code used to perform the examples and simulations in our paper: "Learning the Human's Interaction Strategy" (in process). We also have included the results from our simulation, which were used to generate the result figures in our paper.
 
 ## Learning Example
 
