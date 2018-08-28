@@ -10,6 +10,6 @@ This folder contains the code used to generate the example in Section IV-C, wher
 
 This folder contains the code used to generate the example in Section V-D, where the robot is teaching the human which goal it is attempting to reach.
 
-## Simulations
+## Simulation
 
 This folder contains the code used to perform the "Learning Simulations" in Section VI. The human provides a policy demonstration, and the robot is attempting to learn the human's reward parameters.
