@@ -5,61 +5,41 @@ Created on Aug 20, 2018
 '''
 
 import pickle
+import csv
 import utils as ut
+import numpy as np
 
 
 def phi_loss(results):
-    error = [0]*5
+    loss = []
     for res in results:
         phi = [res.phi_n, res.phi_p, res.phi_0, res.phi_L, res.phi_S]
-        for i in range(len(phi)):
-            error[i] += abs(res.phi_star - phi[i]) / len(results)
-    return error
+        loss.append(phi)
+    return loss
 
 
 def theta_loss(results):
+    loss = np.zeros((len(results),5))
     error = [0] * 5
     for res in results:
         theta = [res.theta_n, res.theta_p, res.theta_0, res.theta_L, res.theta_S]
         for i in range(len(theta)):
-            error[i] += ut.reward_error(res.theta_star, theta[i]) / len(results)
-    return error
+            error[i] = ut.reward_error(res.theta_star, theta[i])
+        loss[res.ID,:] = error
+    return loss.tolist()
 
 
 def policy_loss(results):
-    loss = [0] * 6
+    loss = np.zeros((len(results),5))
+    error = [0] * 5
     for res in results:
         pi_star, _ = ut.policy_iteraion(res.mdp, res.theta_star, res.D)
-        loss[0] += ut.regret(res.mdp, res.theta_star, pi_star, res.D) / len(results)
         theta = [res.theta_n, res.theta_p, res.theta_0, res.theta_L, res.theta_S]
         for i in range(len(theta)):
             pi, _ = ut.policy_iteraion(res.mdp, theta[i], pi_star)
-            loss[i+1] += ut.regret(res.mdp, res.theta_star, pi_star, pi) / len(results)
-    return loss
-
-
-def get_user(results, user_number):
-    results_filter = []
-    for res in results:
-        if res.ID[0] == user_number:
-            results_filter.append(res)
-    return results_filter
-
-
-def get_iter(results, t):
-    results_filter = []
-    for res in results:
-        if res.ID[1] == t:
-            results_filter.append(res)
-    return results_filter
-
-
-def save_object(obj, path, append = False):
-    append_write = "wb"
-    if append:
-        append_write = "ab"
-    with open(path, append_write) as output:
-        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+            error[i] = ut.regret(res.mdp, res.theta_star, pi_star, pi)
+        loss[res.ID,:] = error
+    return loss.tolist()
         
     
 def load_results(path_pickle):
@@ -72,6 +52,24 @@ def load_results(path_pickle):
             except EOFError:
                 break
     return results
+
+
+def csv_writer(data, path, append = False):
+    append_write = "w"
+    if append:
+        append_write = "a"
+    with open(path, append_write, newline='') as csv_file:
+        writer = csv.writer(csv_file, delimiter=',')
+        for line in data:
+            writer.writerow(line)
+
+
+def save_object(obj, path, append = False):
+    append_write = "wb"
+    if append:
+        append_write = "ab"
+    with open(path, append_write) as output:
+        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
         
 
 class Results:
