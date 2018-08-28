@@ -1,6 +1,6 @@
 # Learning Simulation Results
 
-The results used to generate the figures from Section VI-E. In other words, the results from our Learning Simulations, which were generated using "simulation_main"
+The results used to generate the figures from Section VI-E. In other words, the results from our Learning Simulations.
 
 ## Nomenclature
 The files are named as follows:
