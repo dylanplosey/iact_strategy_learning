@@ -1,7 +1,10 @@
 '''
-Created on Aug 9, 2018
+Utility functions needed for performing each user simulation
 
-@author: Lenovo
+We here define the gridworld and our modified Policy_Walk algorithm
+We also include the dependent measures Reward_Error and Policy_Loss
+Finally, the simulated users are defined here, including their likelihood function
+
 '''
 
 import random
@@ -14,11 +17,16 @@ EPSILON = np.nextafter(0,1)
 
 
 def sample_reward(mdp, D, T, eta_theta, eta_phi, alpha, theta, phi):
+    """Modified Policy_Walk (originally from Ramachandran & Amir) which also
+    samples phi (in addition to theta).
+    Performs MCMC by sampling theta and phi for a total of T seconds, and
+    returns the mean value of theta and phi sampled"""
     theta_chain, phi_chain = [theta], [phi]
     pi, V = policy_iteraion(mdp, theta)
     P = likelihood(mdp, theta, phi, V, D, alpha)
     watchdog, count = time.time(), 0
     while time.time() - watchdog < T:
+        #to mitigate the effects of local minima, sample randomly sometimes!
         if random.random() < 0.95:
             theta1, phi1 = perturb_theta(theta, eta_theta), perturb_phi(phi, eta_phi)
         else:
@@ -39,8 +47,9 @@ def sample_reward(mdp, D, T, eta_theta, eta_phi, alpha, theta, phi):
 
 
 def action_likelihood(mdp, theta, phi, V, state, action, alpha):
-    if phi > 0:
-        phi *= 5.0
+    """The (modeled) human's policy, i.e., likelihood of taking a specific action 
+    given the state, theta, phi and alpha.
+    Note that this returns a probability which is NOT normalized"""
     s1 = mdp.T(state, action)
     expect = V[s1] - V[state]
     exaggerate = mdp.R(s1, theta) - mdp.R(state, theta)
@@ -49,6 +58,8 @@ def action_likelihood(mdp, theta, phi, V, state, action, alpha):
 
 
 def likelihood(mdp, theta, phi, V, D, alpha):
+    """Return the likelihood of the policy D given theta, phi, and alpha.
+    We normalize the action likelihood (over all actions) here"""
     P = 1.0
     for s in D:
         p = action_likelihood(mdp, theta, phi, V, s, D[s], alpha)
@@ -58,6 +69,8 @@ def likelihood(mdp, theta, phi, V, D, alpha):
 
 
 def simulated_human(mdp, theta, phi, alpha, noise):
+    """Return the simulated user's demonstration D, which is a policy.
+    A given human action is completely random with probability noise"""
     threshold = 1.0 - noise
     _, V = policy_iteraion(mdp, theta)
     D = dict([(s,0) for s in mdp.states])
@@ -73,20 +86,24 @@ def simulated_human(mdp, theta, phi, alpha, noise):
 
 
 def sample_phi():
+    """Generate a random value of phi"""
     return random.uniform(-1,1)
 
 
 def perturb_phi(phi,eta):
+    """Randomly perturb phi by step size eta"""
     lb = max(-eta/2.0, -1 - phi)
     ub = min(eta/2.0, 1 - phi)
     return phi + random.uniform(lb, ub)
 
 
 def sample_theta(nFeats):
+    """Generate a random value of theta"""
     return [random.uniform(-1.0/nFeats, 1.0/nFeats) for _ in range(nFeats)]
 
 
 def perturb_theta(theta, eta):
+    """Randomly perturb theta by step size eta"""
     nFeats = len(theta)
     theta1 = [theta[i] for i in range(nFeats)]
     for i in range(nFeats):
@@ -97,6 +114,7 @@ def perturb_theta(theta, eta):
 
 
 def policy_iteraion(mdp, theta, pi0 = None):
+    """Policy iteration algorithm, where the policy is initialized with pi0"""
     if pi0:
         pi = dict([(s,pi0[s]) for s in mdp.states])
     else:
@@ -117,6 +135,7 @@ def policy_iteraion(mdp, theta, pi0 = None):
 
 
 def policy_value(mdp, theta, pi):
+    """Get the value of each state given policy pi and reward parameters theta"""
     R, T, I = np.zeros(mdp.nStates), np.zeros((mdp.nStates,mdp.nStates)), np.identity(mdp.nStates)
     for s in mdp.states:
         R[mdp.get_index(s)] = mdp.R(s,theta)
@@ -129,18 +148,24 @@ def policy_value(mdp, theta, pi):
 
 
 def regret(mdp, theta_star, pi_star, pi):
+    """Return the Policy_Loss of policy pi as compared to the optimal policy pi_star,
+    given the true reward parameters theta_star: |V(pi_star) - V(pi)|_1"""
     V_star = policy_value(mdp, theta_star, pi_star)
     V = policy_value(mdp, theta_star, pi)
     return sum(V_star[s] - V[s] for s in mdp.states)
 
 
 def reward_error(theta_star, theta):
+    """Return the Reward_Error between the true reward parameters theta_star
+    and the mean estimated reward parameters theta: |theta_star - theta|_1"""
     return sum(abs(i[0] - i[1]) for i in zip(theta_star, theta))
 
 
 class State:
 
     def __init__(self, position = None):
+        """A state contains its position in the gridworld, the set of actions
+        that can be taken from that state, and the feature vector for that state"""
         self.position = position
         self.actions = []
         self.features = []
@@ -149,6 +174,7 @@ class State:
 class GridWorld:
 
     def __init__(self, nFeats = 8, nRows = 8, nCols = 8, gamma = 0.9):
+        """Intitialize the gridworld, which is a list of states"""
         self.nFeats = nFeats
         self.nRows = nRows
         self.nCols = nCols
@@ -171,14 +197,18 @@ class GridWorld:
                 self.states.append(s)
 
     def T(self, state, action):
+        """Deterministic transition function from one state to another state"""
         return self.get_state(state.position[0] + action[0], state.position[1] + action[1])
 
     def R(self, state, theta):
+        """Return the state reward, which is a linear combination of features weighted by theta"""
         return sum(i[0] * i[1] for i in zip(state.features, theta))
 
     def get_state(self, pos_x, pos_y):
+        """Return the state at position (pos_x, pos_y)"""
         return self.states[pos_y * (self.nCols) + pos_x]
 
     def get_index(self, state):
+        """Return the index of a state in the gridworld list of states"""
         pos = state.position
         return pos[1] * self.nCols + pos[0]
