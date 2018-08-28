@@ -21,7 +21,7 @@ eta_phi = 1.0 		#step size for perturbing phi in Policy_Walk
 
 #select what to call and where to store the simulation results
 simulation_name = "_f" + str(nFeats) + "_a" + str(alpha) + "_n" + str(noise*100)
-path_pickle = r"C:\Users\MAHI\Desktop\Dylan's Python Code\s" + simulation_name + ".pkl"
+path_pickle = r"your file path here" + simulation_name + ".pkl"
 append = False
 
 
