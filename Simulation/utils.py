@@ -51,7 +51,7 @@ def action_likelihood(mdp, theta, phi, V, state, action, alpha):
     given the state, theta, phi and alpha.
     Note that this returns a probability which is NOT normalized"""
     s1 = mdp.T(state, action)
-    expect = V[s1] - V[state]
+    expect = mdp.R(state, theta) + mdp.gamma * V[s1]
     exaggerate = mdp.R(s1, theta) - mdp.R(state, theta)
     action_value = expect + phi * exaggerate
     return math.exp(alpha * action_value)
